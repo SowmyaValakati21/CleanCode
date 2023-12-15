@@ -12,61 +12,51 @@ namespace ConsoleApp1
 
         public void AddNewUser(string userName, string role)
         {
-            ValidateUserName(userName);
-            ValidateRole(role);
-            if (!UserExists(userName))
+            using (var context = new UserManagementContext())
             {
-                users.Add(userName, role);
+                var user = new User { UserName = userName, Role = role };
+                context.Users.Add(user);
+                context.SaveChanges();
+            }
+        }
+        public User GetUserById(int userId)
+        {
+            using (var context = new UserManagementContext())
+            {
+                return context.Users.FirstOrDefault(u => u.UserId == userId);
+            }
+        }
+        public List<User> GetAllUsers()
+        {
+            using (var context = new UserManagementContext())
+            {
+                return context.Users.ToList();
             }
         }
 
-        public void RemoveUser(string userName, string executorRole)
+        public void UpdateUser(int userId, string newUserName, string newRole)
         {
-            ValidateUserName(userName);
-            if (executorRole != "Admin")
+            using (var context = new UserManagementContext())
             {
-                throw new UnauthorizedAccessException("Only admins can remove users.");
-            }
-
-            if (UserExists(userName))
-            {
-                users.Remove(userName);
-            }
-        }
-
-        public List<string> GetAllUsers()
-        {
-            if (IsUserListEmpty())
-            {
-                throw new InvalidOperationException("User list is empty.");
-            }
-            return new List<string>(users.Keys);
-        }
-
-        private bool UserExists(string userName)
-        {
-            return users.ContainsKey(userName);
-        }
-
-        private bool IsUserListEmpty()
-        {
-            return users.Count == 0;
-        }
-
-        private void ValidateUserName(string userName)
-        {
-            if (string.IsNullOrWhiteSpace(userName))
-            {
-                throw new ArgumentException("User name cannot be null, empty, or whitespace.");
+                var user = context.Users.FirstOrDefault(u => u.UserId == userId);
+                if (user != null)
+                {
+                    user.UserName = newUserName;
+                    user.Role = newRole;
+                    context.SaveChanges();
+                }
             }
         }
-
-        private void ValidateRole(string role)
+        public void DeleteUser(int userId)
         {
-            var validRoles = new List<string> { "Admin", "Member" };
-            if (!validRoles.Contains(role))
+            using (var context = new UserManagementContext())
             {
-                throw new ArgumentException("Invalid role.");
+                var user = context.Users.FirstOrDefault(u => u.UserId == userId);
+                if (user != null)
+                {
+                    context.Users.Remove(user);
+                    context.SaveChanges();
+                }
             }
         }
     }
