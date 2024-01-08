@@ -12,13 +12,28 @@ namespace ConsoleApp1
 
         public void AddNewUser(string userName, string role)
         {
-            using (var context = new UserManagementContext())
+            if (string.IsNullOrWhiteSpace(userName) || string.IsNullOrWhiteSpace(role))
             {
-                var user = new User { UserName = userName, Role = role };
-                context.Users.Add(user);
-                context.SaveChanges();
+                throw new ArgumentException("Username and role cannot be null or empty.");
+            }
+
+            try
+            {
+                using (var context = new UserManagementContext())
+                {
+                    var user = new User { UserName = userName, Role = role };
+                    context.Users.Add(user);
+                    context.SaveChanges();
+                }
+            }
+            catch (Exception ex)
+            {
+                // Log the exception details
+                // You can also decide to rethrow the exception or handle it based on your application's needs
+                Console.WriteLine($"An error occurred: {ex.Message}");
             }
         }
+
         public User GetUserById(int userId)
         {
             using (var context = new UserManagementContext())
