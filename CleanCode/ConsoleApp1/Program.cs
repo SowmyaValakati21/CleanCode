@@ -17,7 +17,7 @@ foreach (var user in users)
 
 //update user 
 
-// Assuming Bob's UserId is 2 (You need to check the correct UserId from your database)
+// Assuming Bob's UserId is 2 (You need to check the correct UserId from your database) just check 
 userManagement.UpdateUser(2, "Bob", "Admin");
 var updatedUser = userManagement.GetUserById(2);
 Console.WriteLine($"Updated Info - ID: {updatedUser.UserId}, Name: {updatedUser.UserName}, Role: {updatedUser.Role}");
